@@ -1,44 +1,61 @@
 import json
+import re
 
 
-def prepare_dataset(json_file, name, existing_dataset=[]):
-    # Load the JSON data with the correct encoding
-    with open(json_file, 'r', encoding='utf-8') as file:
+def process_telegram_data(json_filename, existing_dataset, username):
+    def get_text(message):
+        """Extract text from a message, handling cases where text is a list."""
+        if isinstance(message['text'], list):
+            return ' '.join(
+                [part['text'] if isinstance(part, dict) and 'text' in part else part for part in message['text']])
+        return message['text']
+
+    def remove_links(text):
+        """Remove URLs from the given text, case insensitive."""
+        return re.sub(r'(?i)http\S+|www.\S+', '', text)
+
+    with open(json_filename, 'r', encoding='utf-8') as file:
         data = json.load(file)
 
-    messages = data.get('messages', [])
+    # Determine if we are dealing with a single chat or multiple chats
+    if 'chats' in data:
+        chats = data['chats']['list']
+    else:
+        chats = [data]
 
-    # Prepare the dataset
-    dataset = []
-    for i in range(len(messages) - 1):
-        prev_msg = messages[i]
-        next_msg = messages[i + 1]
+    for chat in chats:
+        # Get messages from the current chat
+        messages = chat.get('messages', [])
 
-        # Check if the next message is from the specified user
-        if next_msg.get('from') == name:
-            if next_msg.get('text') != '':
-                dataset.append({
-                    'previous_message': prev_msg.get('text', ''),
-                    'next_message': next_msg.get('text', '')
+        # Merge consecutive messages from the same sender
+        merged_messages = []
+        last_message = None
+
+        for msg in messages:
+            if 'text' not in msg or not msg['text']:
+                continue
+            msg_text = remove_links(get_text(msg))
+            if last_message and last_message['from'] == msg['from']:
+                last_message['text'] += " " + msg_text
+            else:
+                if last_message:
+                    merged_messages.append(last_message)
+                last_message = msg
+                last_message['text'] = msg_text  # update the message text
+        if last_message:
+            merged_messages.append(last_message)
+
+        # Create dataset
+        for i in range(len(merged_messages) - 1):
+            if merged_messages[i + 1]['from'] == username:
+                previous_message = merged_messages[i]['text']
+                next_message = merged_messages[i + 1]['text']
+                # Skip messages longer than 2048 characters
+                if len(previous_message) > 2048 or len(next_message) > 2048:
+                    continue
+                existing_dataset.append({
+                    "previous_message": previous_message,
+                    "next_message": next_message
                 })
 
-    # Add the new dataset to the existing dataset
-    existing_dataset.extend(dataset)
-
     return existing_dataset
-
-
-def save_dataset_to_file(dataset, output_file):
-    with open(output_file, 'w', encoding='utf-8') as file:
-        json.dump(dataset, file, ensure_ascii=False, indent=4)
-
-
-# prepare data example
-name = "Andrey Kupriyanov"
-updated_dataset = []
-file_names = ['onion_frenzy.json', 'innotyaga.json']
-for file_name in file_names:
-    updated_dataset = prepare_dataset(file_name, name, updated_dataset)
-# Save the updated dataset to a file
-output_file = 'updated_dataset.json'
-save_dataset_to_file(updated_dataset, output_file)
