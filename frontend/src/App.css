@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@700&display=swap');
+
+body, html, #root, .App {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.App {
+  display: flex;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #222;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.sidebar-title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.create-button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  border-radius: 20px; /* Закругление кнопки */
+  display: flex;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: bold; /* Жирный шрифт */
+}
+
+.plus-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+}
+
+.model-list {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.model-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 5px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: bold; /* Жирный шрифт */
+}
+
+.auth-buttons {
+  width: 100%;
+}
+
+.auth-button {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px 0;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 20px; /* Закругление кнопок */
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: bold; /* Жирный шрифт */
+}
+
+.auth-button.signup {
+  background-color: white; /* Белый фон для кнопки Sign up */
+  color: black; /* Черный текст для кнопки Sign up */
+}
+
+.main-content {
+  flex-grow: 1;
+  background-color: #111;
+  color: white;
+  position: relative;
+}
+
+.main-title {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Модальное окно */
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+}
+
+.Modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #333;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 80%;
+  z-index: 1001;
+  color: white;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-subtitle {
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-form {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Центрирование содержимого формы */
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.modal-form input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.signup-button {
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: bold; /* Жирный шрифт */
+  width: 60%; /* Уменьшение ширины кнопки */
+  text-align: center; /* Центрирование текста кнопки */
+}
+
+.modal-footer {
+  margin-top: 10px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.modal-footer a {
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
