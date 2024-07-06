@@ -1,14 +1,13 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-
+from peft import PeftModel, PeftConfig
 
 # Загрузка модели и токенизатора
-model_name = "tinkoff-ai/ruDialoGPT-small"
-model_name_1 = 'tinkoff-ai/ruDialoGPT-medium'
-tokenizer = AutoTokenizer.from_pretrained(model_name_1)
-model = AutoModelForCausalLM.from_pretrained(model_name_1)
-
+#model_name_1 = 'tinkoff-ai/ruDialoGPT-medium'
+#tokenizer = AutoTokenizer.from_pretrained(model_name_1)
+#model = AutoModelForCausalLM.from_pretrained(model_name_1)
+default_model_path = 'models/andrey_model_4ep'
 # Функция для генерации ответа от модели
-def generate_response(prompt):
+def generate_response(prompt, model, tokenizer):
     inputs = tokenizer.encode(prompt, return_tensors="pt")
     outputs = model.generate(
     inputs,
@@ -31,7 +30,7 @@ def generate_response(prompt):
 
 
 
-def get_answer(history, user_input, model=model, tokenizer=tokenizer):
+def get_answer1(history, user_input, model, tokenizer):
 
     if history == "":
         history = "@@ПЕРВЫЙ@@ "
@@ -49,18 +48,41 @@ def get_answer(history, user_input, model=model, tokenizer=tokenizer):
     return only_response, new_history
 
 
-def start_local_chat(model=model, tokenizer=tokenizer):
+def get_answer(history, user_input, model_path=default_model_path):
+
+    config = PeftConfig.from_pretrained(model_path)
+    model_without_peft = AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path, return_dict=True)
+    tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)
+
+    # Load the Lora model
+    model = PeftModel.from_pretrained(model_without_peft, model_path)
+
+    if history == "":
+        history = "@@ПЕРВЫЙ@@ "
+    
+    new_history = history + str(user_input + " @@ВТОРОЙ@@")
+
+    response_starts = len(new_history)
+
+    response = generate_response(new_history, model, tokenizer)
+    
+    only_response = response[response_starts:].replace("@@ВТОРОЙ@@", "").replace("@@ПЕРВЫЙ@@", "")
+    
+    new_history = " " + only_response + " @@ПЕРВЫЙ@@ "
+
+    return only_response, new_history
+
+def start_local_chat():
     # Основной цикл для общения с моделью
     print("Начните общение с моделью (введите 'exit' для выхода)")
 
-    print(tokenizer.bos_token)
     history = ""
     while True:
         user_input = input("Вы: ")
         if user_input.lower() == "exit":
             break
         
-        answer, history = get_answer(history, user_input)
+        answer, history = get_answer(history, user_input, default_model_path)
 
         print("Модель: " + answer)
 

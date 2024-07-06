@@ -9,9 +9,11 @@ from aiogram.utils import executor
 import os
 
 from test_llm_dialog import get_answer
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-
-API_TOKEN = os.environ["API_TOKEN"]
+API_TOKEN = os.getenv("API_TOKEN")
+print(API_TOKEN)
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=API_TOKEN)

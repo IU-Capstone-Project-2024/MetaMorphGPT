@@ -6,3 +6,7 @@ env/
 .idea/
 .vscode/
 src/__pycache__
+datasets/
+data/
+output/
+.DS_Store
