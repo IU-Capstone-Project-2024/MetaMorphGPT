@@ -5,7 +5,7 @@ from peft import PeftModel, PeftConfig
 #model_name_1 = 'tinkoff-ai/ruDialoGPT-medium'
 #tokenizer = AutoTokenizer.from_pretrained(model_name_1)
 #model = AutoModelForCausalLM.from_pretrained(model_name_1)
-default_model_path = 'models/andrey_model_4ep'
+default_model_path = 'models/Egopoler_low'
 # Функция для генерации ответа от модели
 def generate_response(prompt, model, tokenizer):
     inputs = tokenizer.encode(prompt, return_tensors="pt")

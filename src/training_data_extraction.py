@@ -1,8 +1,8 @@
 import json
 import re
+import zipfile
 
-
-def process_telegram_data(json_filename, existing_dataset, username):
+def process_telegram_data(json_content, existing_dataset, username):
     def get_text(message):
         """Extract text from a message, handling cases where text is a list."""
         if isinstance(message['text'], list):
@@ -14,9 +14,9 @@ def process_telegram_data(json_filename, existing_dataset, username):
         """Remove URLs from the given text, case insensitive."""
         return re.sub(r'(?i)http\S+|www.\S+', '', text)
 
-    with open(json_filename, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-
+    #with open(json_filename, 'r', encoding='utf-8') as file:
+    #    data = json.load(file)
+    data = json.loads(json_content)
     # Determine if we are dealing with a single chat or multiple chats
     if 'chats' in data:
         chats = data['chats']['list']
@@ -58,4 +58,17 @@ def process_telegram_data(json_filename, existing_dataset, username):
                     "next_message": next_message
                 })
 
+    return existing_dataset
+
+
+
+def process_zip_archive(zip_filename, existing_dataset, username):
+    with zipfile.ZipFile(zip_filename, 'r') as archive:
+        for file_info in archive.filelist:
+            #print(file_info.filename)
+            if file_info.filename.endswith('.json') and file_info.filename.startswith(archive.filelist[0].filename):
+                with archive.open(file_info.filename) as file:
+                    print(file_info.filename)
+                    json_content = file.read().decode('utf-8')
+                    existing_dataset = process_telegram_data(json_content, existing_dataset, username)
     return existing_dataset
