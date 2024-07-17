@@ -6,7 +6,14 @@ import torch
 import os
 from peft import LoraConfig, get_peft_model 
 from training_data_extraction import process_telegram_data, process_zip_archive
+from google_drive_connection import upload_files
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+import os
 
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()
+drive = GoogleDrive(gauth)
 
 
 def get_device():
@@ -53,13 +60,13 @@ def make_dataset_from_row_data(json_filename, username, count=-1):
     return dataset
 
 
-def train_model(zip_name, output_dir, username, num_of_epochs=3, count=-1, drive=None):
+def train_model(zip_name, model_name, username, num_of_epochs=3, count=-1, drive=drive):
     """
     Trains a causal language model using the provided data in zip file and saves the model to output_dir.
 
     Args:
         zip_name (str): The name of the zip file containing the data.
-        output_dir (str): The directory where the trained model will be saved.
+        model_name (str): The directory where the trained model will be saved.(models/{model_name})
         username (str): The username on which we will train the model.
         num_of_epochs (int, optional): The number of epochs to train the model for. Defaults to 3.
         count (int, optional): The number of data entries to use for training. Defaults to -1 (use all entries).
@@ -114,10 +121,13 @@ def train_model(zip_name, output_dir, username, num_of_epochs=3, count=-1, drive
     )
     print("\n\n")
     trainer.train()
-    model.save_pretrained(output_dir)
+    model.save_pretrained(f"models/{model_name}")
+
+    if drive is not None:
+        upload_files(drive, f"./models", model_name)
 
 
 #train_model("datasets/ontyaga.json", "models/ontyaga_4ep", num_of_epochs=4)
 
 
-train_model('data/res.zip', 'models/Egopoler_low', 'Egopoler', num_of_epochs=3)
+#train_model('data/res.zip', 'Egopoler_low', 'Egopoler', num_of_epochs=3)

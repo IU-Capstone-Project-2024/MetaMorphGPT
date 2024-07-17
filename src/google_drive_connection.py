@@ -1,9 +1,7 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import os
-gauth = GoogleAuth()
-gauth.LocalWebserverAuth()
-drive = GoogleDrive(gauth)
+
 
 
 
@@ -20,27 +18,20 @@ def create_folder(drive, folder_name, parent_folder_id=None):
     folder.Upload()
     return folder['id']
 
-def create_and_upload_file(file_name='test.txt', content='Hello, World!'):
-    try:
-        drive = GoogleDrive(gauth)
-        file = drive.CreateFile({'title': file_name})
-        file.SetContentString(content)
-        file.Upload()
-        return f"File uploaded: {file['title']}"
-    except Exception as e:
-        return 'Error uploading file'
     
 
 
-def upload_files(drive, dirpath, parent_folder_id=None):
+def upload_files(drive, dirpath, model_name, parent_folder_id=None):
     try:
         for item in os.listdir(dirpath):
             item_path = os.path.join(dirpath, item)
+            if item != model_name and parent_folder_id is None:
+                continue
             if os.path.isdir(item_path):
                 # Create folder on Google Drive
                 folder_id = create_folder(drive, item, parent_folder_id)
                 # Recursively upload files in the folder
-                upload_files(drive, item_path, folder_id)
+                upload_files(drive, item_path, model_name, folder_id)
             else:
                 # Upload file to the specified folder
                 file = drive.CreateFile({
@@ -54,7 +45,7 @@ def upload_files(drive, dirpath, parent_folder_id=None):
     except Exception as e:
         return f'Error uploading file: {e}'
 
-#print(upload_files(drive, "./models"))
+#print(upload_files(drive,"./models", "andrey_model_4ep"))
 
 
 
@@ -87,16 +78,16 @@ def download_files_from_folder(drive, folder_id, local_dir):
             print(f"Downloaded file: {file_path}")
 
 
-model_name = "andrey_model_4ep"  # Имя модели, которую вы хотите скачать
-local_dir = "./newmodels"  # Локальная директория для загрузки
+# model_name = "andrey_model_4ep"  # Имя модели, которую вы хотите скачать
+# local_dir = "./newmodels"  # Локальная директория для загрузки
 
-# Получение ID папки модели
-model_folder_id = get_folder_id(drive, model_name)
-print(model_folder_id)
+# # Получение ID папки модели
+# model_folder_id = get_folder_id(drive, model_name)
+# print(model_folder_id)
 
-if model_folder_id:
-    # Загрузка файлов из папки модели в локальную папку
-    download_files_from_folder(drive, model_folder_id, os.path.join(local_dir, model_name))
-    print(f"Model '{model_name}' downloaded successfully.")
-else:
-    print(f"Model folder '{model_name}' not found.")
+# if model_folder_id:
+#     # Загрузка файлов из папки модели в локальную папку
+#     download_files_from_folder(drive, model_folder_id, os.path.join(local_dir, model_name))
+#     print(f"Model '{model_name}' downloaded successfully.")
+# else:
+#     print(f"Model folder '{model_name}' not found.")

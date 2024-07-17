@@ -10,3 +10,4 @@ datasets/
 data/
 output/
 .DS_Store
+client_secrets.json
