@@ -5,7 +5,7 @@ from peft import PeftModel, PeftConfig
 #model_name_1 = 'tinkoff-ai/ruDialoGPT-medium'
 #tokenizer = AutoTokenizer.from_pretrained(model_name_1)
 #model = AutoModelForCausalLM.from_pretrained(model_name_1)
-default_model_path = 'models/Egopoler_low'
+default_model_path = 'models/andrey_model_4ep'
 # Функция для генерации ответа от модели
 def generate_response(prompt, model, tokenizer):
     inputs = tokenizer.encode(prompt, return_tensors="pt")
@@ -68,7 +68,7 @@ def get_answer(history, user_input, model_path=default_model_path):
     
     only_response = response[response_starts:].replace("@@ВТОРОЙ@@", "").replace("@@ПЕРВЫЙ@@", "")
     
-    new_history = " " + only_response + " @@ПЕРВЫЙ@@ "
+    new_history += " " + only_response + " @@ПЕРВЫЙ@@ "
 
     return only_response, new_history
 
@@ -85,6 +85,7 @@ def start_local_chat():
         answer, history = get_answer(history, user_input, default_model_path)
 
         print("Модель: " + answer)
+        print("после ответа", history)
 
 
-#start_local_chat()
+start_local_chat()

@@ -3,6 +3,34 @@ from pydrive.drive import GoogleDrive
 import os
 
 
+def authenticate():
+    gauth = GoogleAuth()
+
+    # Укажите путь к файлу с учетными данными
+    credentials_file = "credentials.json"
+
+    # Проверьте, есть ли файл с учетными данными
+    if os.path.exists(credentials_file):
+        # Загрузите учетные данные из файла
+        gauth.LoadCredentialsFile(credentials_file)
+        if gauth.credentials is None:
+            # Если учетные данные не валидны, выполните ручную авторизацию
+            gauth.LocalWebserverAuth()
+        elif gauth.access_token_expired:
+            # Если токен доступа истек, обновите его
+            gauth.Refresh()
+        else:
+            # Если учетные данные валидны, авторизуйтесь
+            gauth.Authorize()
+    else:
+        # Если файла с учетными данными нет, выполните ручную авторизацию
+        gauth.LocalWebserverAuth()
+        # Сохраните учетные данные в файл
+        gauth.SaveCredentialsFile(credentials_file)
+
+    drive = GoogleDrive(gauth)
+    return drive
+
 
 
 
@@ -45,7 +73,7 @@ def upload_files(drive, dirpath, model_name, parent_folder_id=None):
     except Exception as e:
         return f'Error uploading file: {e}'
 
-#print(upload_files(drive,"./models", "andrey_model_4ep"))
+
 
 
 
@@ -91,3 +119,33 @@ def download_files_from_folder(drive, folder_id, local_dir):
 #     print(f"Model '{model_name}' downloaded successfully.")
 # else:
 #     print(f"Model folder '{model_name}' not found.")
+
+
+
+def try_get_model(drive, model_name):
+    local_model_dir = os.path.join("models", model_name)
+    
+    # Проверка, существует ли модель локально
+    if not os.path.exists(local_model_dir):
+        print(f"Model '{model_name}' not found locally. Downloading from Google Drive...")
+        
+        # Получение ID папки модели на Google Диске
+        model_folder_id = get_folder_id(drive, model_name)
+        
+        if model_folder_id:
+            # Загрузка файлов из папки модели в локальную папку
+            download_files_from_folder(drive, model_folder_id, local_model_dir)
+            print(f"Model '{model_name}' downloaded successfully.")
+        else:
+            print(f"Model folder '{model_name}' not found on Google Drive.")
+            
+    else:
+        print(f"Model '{model_name}' found locally. No need to download.")
+
+
+drive = authenticate()
+# model_name = "1000"  # Имя модели, которую вы хотите скачать
+
+# try_get_model(drive, model_name)
+# print("Completed")
+# print(upload_files(drive, "./models", "0000"))

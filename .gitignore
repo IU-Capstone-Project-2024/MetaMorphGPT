@@ -11,3 +11,5 @@ data/
 output/
 .DS_Store
 client_secrets.json
+__pycache__
+credentials.json
