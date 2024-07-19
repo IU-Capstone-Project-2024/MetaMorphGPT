@@ -8,14 +8,16 @@ import json
 import torch
 from peft import LoraConfig, get_peft_model
 from training.training_data_extraction import process_zip_archive
-from training.google_drive_connection import upload_files, authenticate
+from training.google_drive_connection_2 import upload_files, get_drive_service, get_folder_id
 import os
 
 #gauth = GoogleAuth()
 #gauth.LocalWebserverAuth()
 #drive = GoogleDrive(gauth)
 
-drive = authenticate()
+drive = get_drive_service()
+models_folder_name = "models"  # Имя папки для моделей на Google Диске
+models_folder_id = get_folder_id(drive, models_folder_name)
 
 def get_device():
     """
@@ -126,7 +128,7 @@ def train_model_sync(zip_name, model_name, username, num_of_epochs=3, count=-1, 
     model.save_pretrained(f"models/{model_name}")
 
     if drive is not None:
-        upload_files(drive, f"./models", model_name)
+        upload_files(drive, f"./models", model_name, models_folder_id, True)
 
 async def train_model_async(zip_name, model_name, username, num_of_epochs=3, count=-1, drive=drive):
     """
