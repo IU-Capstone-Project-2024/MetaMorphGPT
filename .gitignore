@@ -13,3 +13,4 @@ output/
 client_secrets.json
 __pycache__
 credentials.json
+service_account.json

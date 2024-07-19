@@ -1,11 +1,8 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel, PeftConfig
 
-# Загрузка модели и токенизатора
-#model_name_1 = 'tinkoff-ai/ruDialoGPT-medium'
-#tokenizer = AutoTokenizer.from_pretrained(model_name_1)
-#model = AutoModelForCausalLM.from_pretrained(model_name_1)
-default_model_path = 'models/andrey_model_4ep'
+
+default_model_path = 'models/0000'
 # Функция для генерации ответа от модели
 def generate_response(prompt, model, tokenizer):
     inputs = tokenizer.encode(prompt, return_tensors="pt")
@@ -85,7 +82,6 @@ def start_local_chat():
         answer, history = get_answer(history, user_input, default_model_path)
 
         print("Модель: " + answer)
-        print("после ответа", history)
 
 
-start_local_chat()
+#start_local_chat()
