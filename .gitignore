@@ -15,3 +15,4 @@ client_secrets.json
 __pycache__
 credentials.json
 service_account.json
+src/service_account.json
