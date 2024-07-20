@@ -19,11 +19,11 @@ load_dotenv()
 # Получение токенов и параметров подключения к базе данных из переменных окружения
 API_TOKEN = os.getenv("API_TOKEN")
 HF_TOKEN = os.getenv("HF_TOKEN")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("POSTGRES_HOST")
+DB_PORT = os.getenv("POSTGRES_PORT")
+DB_NAME = os.getenv("POSTGRES_DB")
+DB_USER = os.getenv("POSTGRES_USER")
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 
 
 # Настройка логирования
@@ -166,7 +166,7 @@ async def change_token(message: types.Message, state: FSMContext):
         )
         conn.commit()  # Подтверждаем изменения в базе данных
         conn.close()
-        
+
         await message.reply("Сommunication has stopped")  # Отправляем сообщение пользователю
     except Exception as e:
         await message.reply(f"An error occurred: {e}")
@@ -192,7 +192,7 @@ async def stop_communication(message: types.Message, state: FSMContext):
         )
         conn.commit()  # Подтверждаем изменения в базе данных
         conn.close()
-        
+
         await message.reply("Communication has stopped.")  # Отправляем сообщение пользователю
         await state.finish()  # Завершаем состояние FSM (Finite State Machine)
     except Exception as e:
@@ -209,7 +209,7 @@ async def chat(message: types.Message, state: FSMContext):
     print(history)
     print("-----------------------")
     current_token = get_token(user_id)
-    
+
     if current_token:
         model_path = f"models/{current_token}"
         try_get_model(drive, models_folder_id, current_token)
@@ -218,7 +218,7 @@ async def chat(message: types.Message, state: FSMContext):
         print("-----------------------")
         print(new_history)
         print("-----------------------")
-        
+
         # Обновление истории в базе данных
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -229,7 +229,7 @@ async def chat(message: types.Message, state: FSMContext):
         ''', (new_history, user_id))
         conn.commit()
         conn.close()
-        
+
         await message.reply(response)
     else:
         await message.reply("Token not found. Please start again with /start.")
