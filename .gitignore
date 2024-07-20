@@ -1,7 +1,11 @@
 .idea
-backend/.env
+#.env
 .venv
 venv/
 env/
 .idea/
 .vscode/
+__pycache__/
+service_account.json
+credentials.json
+client_secrets.json
