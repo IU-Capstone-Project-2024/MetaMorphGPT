@@ -6,6 +6,12 @@ env/
 .idea/
 .vscode/
 __pycache__/
-service_account.json
-credentials.json
+src/__pycache__
+datasets/
+data/
+output/
+.DS_Store
 client_secrets.json
+__pycache__
+credentials.json
+service_account.json
