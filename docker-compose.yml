@@ -8,6 +8,7 @@ services:
       - ./.env
     ports:
       - '${POSTGRES_PORT}:5432'
+    restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
