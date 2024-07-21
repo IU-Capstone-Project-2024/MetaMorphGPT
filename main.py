@@ -163,7 +163,7 @@ async def create_model(
         # Запуск тренировки модели в фоне с обработкой исключений
         async def train_and_save():
             try:
-                await train_model_async('data/' + file.filename, token, model_name, num_of_epochs=3)
+                await train_model_async('data/' + file.filename, token, model_name, num_of_epochs=1, count=100)
                 # Вставка новой модели в таблицу user_models
                 new_model = {
                     "model_name": model_name,

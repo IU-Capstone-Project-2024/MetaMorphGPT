@@ -14,6 +14,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2g  # Ограничение памяти для контейнера
+          cpus: '1.0'  # Ограничение использования процессоров
 
   app:
     build:
@@ -32,6 +37,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 10g  # Ограничение памяти для контейнера
+          cpus: '4.0'  # Ограничение использования процессоров
 
   tg_bot:
     build:
@@ -51,3 +61,8 @@ services:
     depends_on:
       - db
       - app
+    deploy:
+      resources:
+        limits:
+          memory: 2g  # Ограничение памяти для контейнера
+          cpus: '1.0'  # Ограничение использования процессоров
