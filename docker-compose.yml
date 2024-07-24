@@ -1,0 +1,68 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:14
+    container_name: db_app
+    env_file:
+      - ./.env
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2g  # Ограничение памяти для контейнера
+          cpus: '1.0'  # Ограничение использования процессоров
+
+  app:
+    build:
+      context: .
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+    container_name: app_metamorph
+    command: [ "/app/docker/app.sh" ]
+    ports:
+      - "9999:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 10g  # Ограничение памяти для контейнера
+          cpus: '4.0'  # Ограничение использования процессоров
+
+  tg_bot:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      - API_TOKEN=${API_TOKEN}
+      - HF_TOKEN=${HF_TOKEN}
+    container_name: tg_metamorph
+    command: [ "python3", "src/telegram_connect.py" ]
+    depends_on:
+      - db
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 3g  # Ограничение памяти для контейнера
+          cpus: '2.0'  # Ограничение использования процессоров
