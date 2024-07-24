@@ -22,8 +22,9 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -163,7 +164,7 @@ async def create_model(
         # Запуск тренировки модели в фоне с обработкой исключений
         async def train_and_save():
             try:
-                await train_model_async('data/' + file.filename, token, model_name, num_of_epochs=1, count=100)
+                await train_model_async('data/' + file.filename, token, model_name, num_of_epochs=3, count=-1)
                 # Вставка новой модели в таблицу user_models
                 new_model = {
                     "model_name": model_name,
